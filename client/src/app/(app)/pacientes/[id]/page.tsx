@@ -47,7 +47,7 @@ export default function PatientDetailPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/patients/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/patients/${id}`, {
         headers: { 'x-auth-token': token },
       });
 
@@ -61,8 +61,12 @@ export default function PatientDetailPage() {
       }
       const data = await response.json();
       setPatient(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }

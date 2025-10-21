@@ -40,7 +40,7 @@ export default function AddPatientModal({ onPatientAdded }: AddPatientModalProps
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/patients', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/patients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,8 +58,12 @@ export default function AddPatientModal({ onPatientAdded }: AddPatientModalProps
       setIsOpen(false);
       setFormData({ name: '', species: '', breed: '', ownerName: '', ownerPhone: '' });
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsSubmitting(false);
     }

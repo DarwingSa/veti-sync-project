@@ -36,7 +36,7 @@ export default function AddMedicalRecordModal({ patientId, onRecordAdded }: AddM
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/patients/${patientId}/medical-records`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/patients/${patientId}/medical-records`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,8 +54,12 @@ export default function AddMedicalRecordModal({ patientId, onRecordAdded }: AddM
       setIsOpen(false);
       setFormData({ diagnosis: '', treatment: '', notes: '' });
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsSubmitting(false);
     }

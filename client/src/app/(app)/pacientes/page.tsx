@@ -4,7 +4,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { PlusCircle } from 'lucide-react';
 import AddPatientModal from '../../../components/AddPatientModal';
 
 // Interfaz para el objeto paciente
@@ -30,14 +29,18 @@ export default function PatientsPage() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/patients', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/patients`, {
         headers: { 'x-auth-token': token },
       });
       if (!response.ok) throw new Error('Error al cargar los pacientes');
       const data = await response.json();
       setPatients(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }

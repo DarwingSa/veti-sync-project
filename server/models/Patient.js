@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 // Sub-esquema para una entrada del historial médico
 const MedicalRecordSchema = new mongoose.Schema({
@@ -6,21 +6,24 @@ const MedicalRecordSchema = new mongoose.Schema({
   diagnosis: { type: String, required: true },
   treatment: { type: String, required: true },
   notes: { type: String }
-});
+})
 
-const PatientSchema = new mongoose.Schema({
-  // Campo que asocia el paciente con un usuario (veterinario/clínica)
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+const PatientSchema = new mongoose.Schema(
+  {
+    // Campo que asocia el paciente con un usuario (veterinario/clínica)
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    name: { type: String, required: true },
+    species: { type: String, required: true },
+    breed: { type: String },
+    ownerName: { type: String, required: true },
+    ownerPhone: { type: String },
+    medicalHistory: [MedicalRecordSchema]
   },
-  name: { type: String, required: true },
-  species: { type: String, required: true },
-  breed: { type: String },
-  ownerName: { type: String, required: true },
-  ownerPhone: { type: String },
-  medicalHistory: [MedicalRecordSchema]
-}, { timestamps: true });
+  { timestamps: true }
+)
 
-module.exports = mongoose.model('Patient', PatientSchema);
+module.exports = mongoose.model('Patient', PatientSchema)
