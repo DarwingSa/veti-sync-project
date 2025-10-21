@@ -33,7 +33,7 @@ app.use('/api/patients', authMiddleware, require('./routes/patients'));
 // --- Middleware de Manejo de Errores ---
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('¡Algo salió mal!');
+  res.status(500).json({ msg: '¡Algo salió mal!', error: err.message });
 });
 
 // --- Iniciar el Servidor ---

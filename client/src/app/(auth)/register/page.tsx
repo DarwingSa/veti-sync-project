@@ -23,8 +23,13 @@ export default function RegisterPage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.msg || 'Error al registrarse');
+        try {
+          const errorData = await res.json();
+          throw new Error(errorData.msg || 'Error al registrarse');
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (jsonError) {
+          throw new Error('Ocurrió un error inesperado');
+        }
       }
 
       router.push('/login');
