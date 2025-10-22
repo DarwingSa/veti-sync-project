@@ -1,6 +1,6 @@
 
 import Sidebar from '@/components/Sidebar';
-import AuthGuard from '@/components/AuthGuard'; // Importamos el guardián
+import AuthGuard from '@/components/AuthGuard';
 
 export default function AppLayout({
   children,
