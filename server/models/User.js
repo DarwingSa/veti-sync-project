@@ -1,52 +1,45 @@
-// server/models/User.js (VERSIÓN DEFINITIVA Y COMPLETA)
 
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: [true, 'El nombre es obligatorio'],
+    trim: true,
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'El email es obligatorio'],
     unique: true,
-    lowercase: true
+    lowercase: true,
+    trim: true,
+    match: [/\S+@\S+\.\S+/, 'Por favor, utiliza un email válido'],
   },
   password: {
     type: String,
-    required: true
+    required: [true, 'La contraseña es obligatoria'],
+    minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
+    select: false, // ¡CAMBIO CLAVE! No incluir la contraseña en las consultas por defecto.
   },
   role: {
     type: String,
     enum: ['veterinario', 'admin'],
-    default: 'veterinario'
-  }
-})
+    default: 'veterinario',
+  },
+});
 
-// Hook .pre('save'): Se ejecuta ANTES de que un documento 'User' se guarde.
-// Su propósito es encriptar la contraseña.
+// Hook para encriptar la contraseña antes de guardar
 UserSchema.pre('save', async function (next) {
-  // Si la contraseña no ha sido modificada (ej. al actualizar el email), no hacemos nada.
-  if (!this.isModified('password')) {
-    return next()
-  }
-  // Generamos un 'salt' para hacer el hash más seguro.
-  const salt = await bcrypt.genSalt(10)
-  // Reemplazamos la contraseña en texto plano con la contraseña hasheada.
-  this.password = await bcrypt.hash(this.password, salt)
-  next() // Continuamos con el proceso de guardado.
-})
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
-// Método personalizado para el Schema: Nos permite añadir funciones a nuestros documentos.
-// Su propósito es comparar la contraseña que el usuario ingresa en el login
-// con la contraseña hasheada que está en la base de datos.
+// Método para comparar contraseñas
 UserSchema.methods.comparePassword = async function (enteredPassword) {
-  // bcrypt.compare se encarga de todo el proceso de forma segura.
-  // Devuelve 'true' si coinciden, 'false' si no.
-  return await bcrypt.compare(enteredPassword, this.password)
-}
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
-// Exportamos el modelo para que pueda ser utilizado en otras partes de la aplicación (como en las rutas).
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema);

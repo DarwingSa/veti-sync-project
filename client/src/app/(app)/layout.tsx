@@ -1,20 +1,20 @@
-// RUTA: src/app/(app)/layout.tsx
 
-import Sidebar from '../../components/Sidebar'; // Ajustamos la ruta para encontrar el componente
+import Sidebar from '@/components/Sidebar';
+import AuthGuard from '@/components/AuthGuard'; // Importamos el guardián
 
-// Este es el layout para las páginas DENTRO de la aplicación
 export default function AppLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    // Fíjate que aquí ya NO hay <html> ni <body>
-    return (
-        <div className="flex h-screen bg-gray-50">
-            <Sidebar />
-            <main className="flex-1 p-8 overflow-y-auto">
-                {children}
-            </main>
-        </div>
-    );
+  return (
+    <AuthGuard>
+      <div className="flex h-screen bg-gray-50">
+        <Sidebar />
+        <main className="flex-1 p-8 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </AuthGuard>
+  );
 }

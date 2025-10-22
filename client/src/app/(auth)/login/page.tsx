@@ -1,52 +1,41 @@
-// client/app/login/page.tsx
 'use client';
+
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link'; // Importar Link
+import { useAuth } from '@/contexts/AuthContext';
+import { loginUser } from '@/services/authService';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@example.com');
+  const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Credenciales inválidas');
-      }
-
-      const { token } = await res.json();
-      
-      // Guardar el token en localStorage para persistir la sesión
-      localStorage.setItem('veti-sync-token', token);
-      
-      // Redirigir al dashboard
-      router.push('/');
-
+      const response = await loginUser(email, password);
+      login(response.token);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+      const errorMessage = err instanceof Error ? err.message : 'Ocurrió un error desconocido';
+      setError(errorMessage);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-cyan-500">VetiSync</h1>
-        <h2 className="text-xl font-bold text-center">Iniciar Sesión</h2>
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-cyan-600">VetiSync</h1>
+          <p className="mt-2 text-gray-600">Bienvenido de nuevo</p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ... campos del formulario ... */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -55,27 +44,36 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+              disabled={isLoading}
+              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 disabled:bg-gray-50"
             />
           </div>
           <div>
-            <label htmlFor="password"  className="block text-sm font-medium text-gray-700">Contraseña</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Contraseña</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+              disabled={isLoading}
+              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 disabled:bg-gray-50"
             />
           </div>
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+          {error && <p className="text-sm text-center text-red-600">{error}</p>}
           <div>
-            <button type="submit" className="w-full px-4 py-2 font-bold text-white bg-cyan-500 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-              Entrar
+            <button type="submit" disabled={isLoading} className="w-full px-4 py-2 font-bold text-white bg-cyan-500 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50">
+              {isLoading ? 'Iniciando sesión...' : 'Entrar'}
             </button>
           </div>
         </form>
+        {/* Enlace para registrarse */}
+        <p className="text-sm text-center text-gray-600">
+          ¿No tienes una cuenta?{' '}
+          <Link href="/register" className="font-medium text-cyan-600 hover:underline">
+            Regístrate
+          </Link>
+        </p>
       </div>
     </div>
   );

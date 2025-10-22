@@ -4,18 +4,23 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const authMiddleware = require('./middleware/authMiddleware');
+const { errorHandler, ApiError } = require('./utils/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- Middlewares Globales ---
+const corsOptions = {
+  origin: 'http://localhost:3000', // Origen del cliente
+  optionsSuccessStatus: 200 
+};
+
 app.use(helmet());
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors(corsOptions)); // Usar opciones de CORS
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // --- Conexión a la Base de Datos ---
 if (process.env.MONGO_URI && process.env.MONGO_URI.startsWith('mongodb')) {
@@ -30,11 +35,13 @@ if (process.env.MONGO_URI && process.env.MONGO_URI.startsWith('mongodb')) {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/patients', authMiddleware, require('./routes/patients'));
 
-// --- Middleware de Manejo de Errores ---
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('¡Algo salió mal!');
+// --- Middleware para rutas no encontradas ---
+app.use((req, res, next) => {
+  next(new ApiError(`No se puede encontrar ${req.originalUrl} en este servidor`, 404));
 });
+
+// --- Middleware de Manejo de Errores Global ---
+app.use(errorHandler);
 
 // --- Iniciar el Servidor ---
 app.listen(PORT, () => {

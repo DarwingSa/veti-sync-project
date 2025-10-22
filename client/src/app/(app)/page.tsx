@@ -54,7 +54,7 @@ export default function AppHomePage() {
   return (
     <div>
       <h1 className="text-4xl font-bold">Dashboard</h1>
-      <p className="text-gray-600 mt-2">Bienvenido de nuevo, Dr. Martínez</p>
+      <p className="text-gray-600 mt-2">Bienvenido de nuevo, Dr Martínez</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
         <StatCard 

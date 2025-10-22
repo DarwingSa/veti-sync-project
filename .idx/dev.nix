@@ -1,56 +1,32 @@
-# To learn more about how to use Nix to configure your environment
-# see: https://firebase.google.com/docs/studio/customize-workspace
 { pkgs, ... }: {
-  # Which nixpkgs channel to use.
-  channel = "stable-24.05"; # or "unstable"
+  # Entorno de desarrollo para VetiSync
+  # Este archivo define los paquetes y servicios disponibles en tu workspace.
 
-  # Use https://search.nixos.org/packages to find packages
+  # Canales de Nix que usa el entorno.
+  channel = "stable-23.11";
+
+  # Paquetes de Nix disponibles en el entorno.
   packages = [
-    pkgs.nodejs_20
-    # MongoDB ya se gestiona como un servicio, no es necesario aquí.
-    # pkgs.mongodb 
+    pkgs.nodejs_20 # Node.js 20 para el backend y el frontend
   ];
 
-  # Habilitar MongoDB como un servicio
-  services.mongodb.enable = true;
+  # Servicios de NixOS que se ejecutan en segundo plano.
+  services.mongodb.enable = false;
 
-  # Sets environment variables in the workspace
+  # Variables de entorno para el workspace.
   env = {};
-  idx = {
-    # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
-    extensions = [
-      # "vscodevim.vim"
-    ];
 
-    # Enable previews
-    previews = {
-      enable = true;
-      previews = {
-        # web = {
-        #   # Example: run "npm run dev" with PORT set to IDX's defined port for previews,
-        #   # and show it in IDX's web preview panel
-        #   command = ["npm" "run" "dev"];
-        #   manager = "web";
-        #   env = {
-        #     # Environment variables to set for your server
-        #     PORT = "$PORT";
-        #   };
-        # };
-      };
+  # Exponer puertos a la máquina local para que el navegador pueda acceder a ellos.
+  ports = {
+    # Puerto para la aplicación de frontend (Next.js)
+    client = {
+      port = 3000;
+      onOpen = "open"; # Abrir automáticamente en una pestaña del navegador
     };
-
-    # Workspace lifecycle hooks
-    workspace = {
-      # Runs when a workspace is first created
-      onCreate = {
-        # Example: install JS dependencies from NPM
-        # npm-install = "npm install";
-      };
-      # Runs when the workspace is (re)started
-      onStart = {
-        # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
-      };
+    # Puerto para el servidor de backend (Node.js)
+    server = {
+      port = 5000;
+      onOpen = "ignore"; # No hacer nada al abrir
     };
   };
 }
