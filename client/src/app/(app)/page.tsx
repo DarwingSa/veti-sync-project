@@ -1,52 +1,48 @@
 'use client'; 
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import StatCard from '../../components/StatCard';
 import { Calendar, PawPrint, Syringe, DollarSign } from 'lucide-react';
 
 export default function AppHomePage() {
   const [activePatients, setActivePatients] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('veti-sync-token');
-    
-    if (!token) {
-      router.push('/login');
-    } else {
-      const fetchDashboardData = async () => {
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/patients/count`, {
-            headers: { 'x-auth-token': token },
-          });
-          
-          if (!response.ok) {
-            localStorage.removeItem('veti-sync-token');
-            router.push('/login');
-            return;
-          }
-          
+    const fetchDashboardData = async () => {
+      // AuthGuard in layout handles token check
+      const token = localStorage.getItem('authToken');
+      if (!token) return; // Should not happen if AuthGuard is effective
+
+      try {
+        // Use a relative path for the API call
+        const response = await fetch(`/api/patients/count`, {
+          headers: { 'x-auth-token': token },
+        });
+
+        if (response.ok) {
           const data = await response.json();
           setActivePatients(data.count.toString());
-
-        } catch (error) {
-          console.error("Error al obtener datos:", error);
+        } else {
+          // Handle non-OK responses, e.g., by logging out the user
+          console.error("Failed to fetch patient count:", response.statusText);
           setActivePatients("Error");
-        } finally {
-            setIsLoading(false);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setActivePatients("Error");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      fetchDashboardData();
-    }
-  }, [router]);
+    fetchDashboardData();
+  }, []);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p>Cargando...</p>
+        <p>Cargando datos...</p>
       </div>
     );
   }

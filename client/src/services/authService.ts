@@ -13,7 +13,7 @@ interface AuthResponse {
  * @throws Lanza un error con el mensaje del servidor si el login falla.
  */
 export const loginUser = async (email: string, password: string): Promise<AuthResponse> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+  const res = await fetch(`/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -37,7 +37,7 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
  * @throws Lanza un error con el mensaje del servidor si el registro falla.
  */
 export const registerUser = async (name: string, email: string, password: string): Promise<AuthResponse> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+  const res = await fetch(`/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password }),
