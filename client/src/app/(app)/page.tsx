@@ -11,7 +11,7 @@ export default function AppHomePage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       // AuthGuard in layout handles token check
-      const token = localStorage.getItem('veti-sync-token');
+      const token = localStorage.getItem('authToken');
       if (!token) return; // Should not happen if AuthGuard is effective
 
       try {
