@@ -31,6 +31,14 @@ if (process.env.MONGO_URI && process.env.MONGO_URI.startsWith('mongodb')) {
   console.warn('MONGO_URI no está definida o es inválida. Saltando la conexión a la base de datos.');
 }
 
+// --- Ruta Raíz ---
+app.get('/', (req, res) => {
+  res.json({
+    status: 'success',
+    message: 'Bienvenido al API de VetiSync. El servidor está operativo.',
+  });
+});
+
 // --- Definición de Rutas ---
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/patients', authMiddleware, require('./routes/patients'));
