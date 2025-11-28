@@ -72,7 +72,7 @@ router.post(
 router.post(
   '/:id/medical-records',
   asyncHandler(async (req, res) => {
-    const { diagnosis, treatment, notes } = req.body;
+    const { diagnosis, treatment, notes, type } = req.body;
     if (!diagnosis || !treatment) {
       return res
         .status(400)
@@ -87,7 +87,12 @@ router.post(
       return res.status(401).json({ msg: 'Acceso no autorizado' });
     }
 
-    const newMedicalRecord = { diagnosis, treatment, notes: notes || '' };
+    const newMedicalRecord = {
+      diagnosis,
+      treatment,
+      notes: notes || '',
+      type: type || 'Consulta'
+    };
     patient.medicalHistory.unshift(newMedicalRecord);
     await patient.save();
     res.status(201).json(patient.medicalHistory[0]);

@@ -36,11 +36,11 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
  * @returns La respuesta de la API, que incluye el token.
  * @throws Lanza un error con el mensaje del servidor si el registro falla.
  */
-export const registerUser = async (name: string, email: string, password: string): Promise<AuthResponse> => {
+export const registerUser = async (name: string, email: string, password: string, role: 'veterinario' | 'paciente'): Promise<AuthResponse> => {
   const res = await fetch(`/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ name, email, password, role }),
   });
 
   const data = await res.json();

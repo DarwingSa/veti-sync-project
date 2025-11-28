@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(decoded.user as User);
       setToken(newToken);
       localStorage.setItem('authToken', newToken);
-      router.push('/pacientes'); // Redirige a la página principal de la app tras el login
+      router.push('/'); // Redirige al Dashboard
     } catch (error) {
       console.error('Error decodificando el token en login:', error);
     }

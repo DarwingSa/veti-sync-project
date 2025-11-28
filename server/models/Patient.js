@@ -3,6 +3,11 @@ const mongoose = require('mongoose')
 // Sub-esquema para una entrada del historial médico
 const MedicalRecordSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
+  type: {
+    type: String,
+    enum: ['Consulta', 'Vacunación', 'Cirugía', 'Estudio', 'Otro'],
+    default: 'Consulta'
+  },
   diagnosis: { type: String, required: true },
   treatment: { type: String, required: true },
   notes: { type: String }

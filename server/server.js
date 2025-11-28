@@ -11,14 +11,18 @@ const { errorHandler, ApiError } = require('./utils/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const morgan = require('morgan'); // Import morgan
+
 // --- Middlewares Globales ---
 const corsOptions = {
   origin: 'http://localhost:3000', // Origen del cliente
+  credentials: true, // Allow cookies if needed
   optionsSuccessStatus: 200 
 };
 
 app.use(helmet());
 app.use(cors(corsOptions)); // Usar opciones de CORS
+app.use(morgan('dev')); // Use morgan for logging
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

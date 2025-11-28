@@ -34,7 +34,7 @@ router.post('/register', catchAsync(async (req, res, next) => {
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return next(new ApiError('Un usuario con este email ya existe', 409)); // 409 Conflict
+    return next(new ApiError('Un usuario con este email ya existe', 409));
   }
 
   const newUser = new User({ name, email, password });
@@ -42,9 +42,15 @@ router.post('/register', catchAsync(async (req, res, next) => {
 
   const token = signToken(newUser);
 
+  // No enviar la contraseña en la respuesta
+  newUser.password = undefined;
+
   res.status(201).json({
     status: 'success',
     token,
+    data: {
+      user: newUser
+    },
     message: 'Usuario registrado exitosamente.',
   });
 }));
@@ -61,15 +67,20 @@ router.post('/login', catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.comparePassword(password))) {
-    return next(new ApiError('Email o contraseña incorrectos', 401)); // 401 Unauthorized
+    return next(new ApiError('Email o contraseña incorrectos', 401));
   }
 
   const token = signToken(user);
 
+  // No enviar la contraseña en la respuesta
+  user.password = undefined;
 
   res.json({
     status: 'success',
     token,
+    data: {
+      user
+    }
   });
 }));
 
